@@ -1,0 +1,19 @@
+#!/bin/bash
+set -o errexit
+set -o nounset
+
+CMD="/webannot/webannot/CRISPRFinder_beta2_11.py"
+case $1 in
+    -h|--help)
+    $CMD -h
+    shift # past argument
+    ;;
+    *)
+    readonly INFILE=$1
+    readonly OUTDIR=$2
+    shift
+    shift
+    cd /webannot/upload/ && $CMD $@ --fasta /webannot/upload/${INFILE} --output_dir /webannot/upload/${OUTDIR}
+    ;;
+esac
+

@@ -1,0 +1,17 @@
+{% macro input_field(form, field_name, placeholder, class="form-control", label=True) %}
+<div class="form-group {% if form[field_name].errors %} has-error {% endif %}">
+    {% if label %}
+    {{ form[field_name].label(class="col-md-2 control-label") }}
+    {% endif %}
+    <div class=" {% if not label %} col-md-offset-2 {% endif %} col-md-5">
+        {% if placeholder %}
+        {{ form[field_name](placeholder=placeholder, class=class) }}
+        {% else %}
+        {{ form[field_name](class=class) }}
+        {% endif %}
+    </div>
+    <p class="col-md-5 help-block">
+		<small id="{{ field_name }}Help" class="form-text text-muted">{{ form[field_name].description }}</small><br>
+        <small>{{ form[field_name].errors[0] }}</small>
+</div>
+{% endmacro %}

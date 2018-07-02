@@ -1,0 +1,53 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<script type=text/javascript src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+
+{% if processing %}
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  function updateWhenProcessFinished() {
+    $.getJSON($SCRIPT_ROOT + '/_processing', {
+      uuid: "{{ uuid }}"
+    }, function(processingBoolean) {
+      if (! processingBoolean.result) {
+        //if ($("#process").length == 0) {//already reloaded, do not refresh
+          location.reload();
+        //}
+      }
+      else {
+        setTimeout(updateWhenProcessFinished, 5000);
+      }
+    });
+  };
+    setTimeout(updateWhenProcessFinished,5000);
+    //updateWhenProcessFinished()
+</script>
+{% endif %}
+
+<div class="modal-header">
+    <h1 class="form-heading">CRISPRDetect {% if uuid %} : {{ uuid }} {% endif %}</h1>
+</div>
+<div class="modal-body">
+    {% if processing %}
+     <p id="processing">Processing your results <img src="{{ url_for('static', filename='fonts/ajax-loader.gif') }}" alt="loading"></p>
+    {% else %}
+    {% for file in result_files %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" aria-expanded="false" href="#{{ file.name }}">
+                {{ file.name }}
+                <i class="glyphicon glyphicon glyphicon-plus pull-right"></i>
+                <i class="glyphicon glyphicon glyphicon-minus pull-right"></i>
+              </a>
+            </h4>
+          </div>
+	  <div id="{{ file.name }}" class="panel-body panel-collapse collapse"> <embed style="width: 100%" src="{{ request.script_root }}{{ file.url }}"> </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock %}
